@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recomendação de Jogos</title>
+    <!-- Alterar o caminho para os arquivos estáticos -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Recomendação de Jogos Steam</h1>
+        <div class="input-group">
+            <label for="steam-username">Nome de Usuário Steam:</label>
+            <input type="text" id="steam-username" placeholder="Digite seu nome de usuário Steam">
+            <button onclick="getUserGames()">Buscar Jogos</button>
+        </div>
+
+        <div id="game-list-container" style="display: none;">
+            <h2>Jogos do Usuário</h2>
+            <div id="game-list" class="game-grid"></div>
+            <br>
+            <button id="load-more-btn" style="display: none;">Ver mais jogos</button>
+        </div>
+        
+        <!-- Tela de Carregamento -->
+        <div id="loading-container" style="display: none;">
+            <img src="{{ url_for('static', filename='loading.gif') }}" alt="Carregando...">
+        </div>
+        
+
+
+        <div id="recommendation-container" style="display: none;">
+            <h2>Recomendações de Jogos</h2>
+            <div class="recommendations">
+                <ul id="recommendations-list"></ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alterar o caminho para os arquivos estáticos -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
