@@ -1,13 +1,16 @@
 import json
+from dotenv import load_dotenv
+import os
 import requests
 from flask import Flask, render_template, request, jsonify
 import google.generativeai as genai
 
 app = Flask(__name__)
+load_dotenv()
 
-STEAM_API_KEY = "6551A66F58B71B6E47F57105BFC83759"
+STEAM_API_KEY = os.environ["STEAM_API_KEY"]
 STEAM_API_BASE = "http://api.steampowered.com"
-GEMINI_API_KEY = "AIzaSyAEUhihyy-c2Z5KvaRu9Zwf8IulAdU6w_8"
+GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
 
 genai.configure(api_key=GEMINI_API_KEY)
 
