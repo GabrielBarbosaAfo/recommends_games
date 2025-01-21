@@ -85,7 +85,7 @@ async function recommendGames(games) {
         recommendationsList.innerHTML = '';
         data.recommendations.forEach(rec => {
             const li = document.createElement('li');
-            li.textContent = rec;
+            li.innerHTML = rec;
             recommendationsList.appendChild(li);
         });
 
