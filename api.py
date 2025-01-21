@@ -76,6 +76,8 @@ def recommend_games():
         prompt = f"""
         Baseado nos seguintes jogos que eu gosto: {', '.join(games_list[:20])}, 
         recomende 3 jogos semelhantes que eu poderia gostar. Explique brevemente a razão de cada recomendação.
+
+        quero que sua saida seja em formato html, apenas o conteudo da div sem a estrutura toda do html.
         """
 
         model = genai.GenerativeModel('gemini-1.5-flash')
