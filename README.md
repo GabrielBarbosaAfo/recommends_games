@@ -14,6 +14,14 @@ Este aplicativo fornece recomendações de jogos com base na biblioteca de jogos
 
 ![image](https://github.com/user-attachments/assets/547ecb8b-c04c-4267-857b-fa4706b8d68a)
 
+
+
+
+https://github.com/user-attachments/assets/ec1cbc26-b07e-4efd-91fd-5fe804b10ade
+
+
+
+
 ---
 
 ## Requisitos
