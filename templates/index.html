@@ -3,43 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recomendação de Jogos</title>
-    <!-- Alterar o caminho para os arquivos estáticos -->
+    <title>Recomendação de Jogos Steam</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-
     <div class="container">
-        <h1>Recomendação de Jogos Steam</h1>
-        <div class="input-group">
-            <label for="steam-username">Nome de Usuário Steam:</label>
-            <input type="text" id="steam-username" placeholder="Digite seu nome de usuário Steam">
-            <button onclick="getUserGames()">Buscar Jogos</button>
-        </div>
-
-        <div id="game-list-container" style="display: none;">
-            <h2>Jogos do Usuário</h2>
-            <div id="game-list" class="game-grid"></div>
-            <br>
-            <button id="load-more-btn" style="display: none;">Ver mais jogos</button>
-        </div>
         
-        <!-- Tela de Carregamento -->
-        <div id="loading-container" style="display: none;">
-            <img src="{{ url_for('static', filename='loading.gif') }}" alt="Carregando...">
-        </div>
+        <header>
+            <h1>Recomendação de Jogos Steam</h1>
+        </header>
         
+        <main>
+            <section class="search-section">
+                <div class="input-group">
+                    <label for="steam-username">Nome de Usuário Steam:</label>
+                    <input type="text" id="steam-username" placeholder="Digite seu nome de usuário Steam">
+                    <button onclick="getUserGames()">Buscar Jogos</button>
+                </div>
+            </section>
 
-
-        <div id="recommendation-container" style="display: none;">
-            <h2>Recomendações de Jogos</h2>
-            <div class="recommendations">
-                <ul id="recommendations-list"></ul>
+            <section id="game-list-container" style="display: none;">
+                <h2>Jogos do Usuário</h2>
+                <div id="game-list" class="game-grid"></div>
+                <br>
+                <div class="navigation-buttons">
+                    <button id="back-btn" style="display: none;">Voltar</button>
+                    <button id="load-more-btn" style="display: none;">Ver mais jogos</button>
+                </div>
+            </section>
+            
+            <div id="loading-container" style="display: none;">
+                <img src="{{ url_for('static', filename='loading.gif') }}" alt="Carregando...">
             </div>
-        </div>
+
+            <section id="recommendation-container" style="display: none;">
+                <h2>Recomendações de Jogos</h2>
+                <div class="recommendations">
+                    <div id="recommendations-list" class="recommendation-grid"></div>
+                </div>
+            </section>
+        </main>
+
     </div>
 
-    <!-- Alterar o caminho para os arquivos estáticos -->
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
+

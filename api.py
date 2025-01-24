@@ -4,6 +4,7 @@ import os
 import requests
 from flask import Flask, render_template, request, jsonify
 import google.generativeai as genai
+import re
 
 app = Flask(__name__)
 load_dotenv()
@@ -75,20 +76,73 @@ def recommend_games():
     try:
         prompt = f"""
         Baseado nos seguintes jogos que eu gosto: {', '.join(games_list[:20])}, 
-        recomende 3 jogos semelhantes que eu poderia gostar. Explique brevemente a razão de cada recomendação.
+        recomende 3 jogos semelhantes que eu poderia gostar. Para cada jogo recomendado, forneça:
+        1. O título exato do jogo
+        2. Uma breve descrição do jogo (máximo 100 caracteres)
+        3. A razão pela qual você está recomendando este jogo (máximo 150 caracteres)
 
-        quero que sua saida seja em formato html, apenas o conteudo da div sem a estrutura toda do html.
+        Formate sua resposta como um JSON válido com a seguinte estrutura:
+        {{
+            "recommendations": [
+                {{
+                    "title": "Título do Jogo",
+                    "description": "Breve descrição do jogo",
+                    "reason": "Razão da recomendação"
+                }},
+                ...
+            ]
+        }}
         """
 
         model = genai.GenerativeModel('gemini-1.5-flash')
         response = model.generate_content(prompt)
 
-        recommendations = response.text.strip().split('\n') 
+        try:
+            recommendations = json.loads(response.text)
+        except json.JSONDecodeError:
+            json_match = re.search(r'\{.*\}', response.text, re.DOTALL)
+            if json_match:
+                recommendations = json.loads(json_match.group())
+            else:
+                recommendations = {
+                    "recommendations": [
+                        {
+                            "title": "Recomendação não disponível",
+                            "description": "Não foi possível gerar recomendações neste momento.",
+                            "reason": "Erro na resposta da API"
+                        }
+                    ]
+                }
 
-        return jsonify({'recommendations': recommendations}), 200
+        # Buscar capas dos jogos recomendados
+        for game in recommendations['recommendations']:
+            game_info = get_game_info(game['title'])
+            if game_info:
+                game['appid'] = game_info['appid']
+                game['img'] = f"https://cdn.cloudflare.steamstatic.com/steam/apps/{game_info['appid']}/header.jpg"
+            else:
+                game['img'] = "/static/placeholder.jpg"  # Imagem placeholder se não encontrar o jogo
+
+        return jsonify(recommendations), 200
 
     except Exception as e:
+        app.logger.error(f"Erro ao usar a API Gemini: {str(e)}")
         return jsonify({'error': f"Erro ao usar a API Gemini: {str(e)}"}), 500
+
+def get_game_info(game_name):
+    try:
+        search_url = f"{STEAM_API_BASE}/ISteamApps/GetAppList/v2/"
+        response = requests.get(search_url)
+        response.raise_for_status()
+        app_list = response.json()['applist']['apps']
+        
+        for app in app_list:
+            if app['name'].lower() == game_name.lower():
+                return app
+        return None
+    except Exception as e:
+        app.logger.error(f"Erro ao buscar informações do jogo: {str(e)}")
+        return None
 
 if __name__ == "__main__":
     app.run(debug=True)
