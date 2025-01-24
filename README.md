@@ -2,7 +2,7 @@
 
 # Aplicativo de Recomendação de Jogos Steam
 
-![image](https://github.com/user-attachments/assets/a0d4c9fc-ef2c-454a-ada4-d1f4bdbadf4c)
+![image](https://github.com/user-attachments/assets/370bb59c-498d-401f-9a3b-1437cd4fdb19)
 
 
 Este aplicativo fornece recomendações de jogos com base na biblioteca de jogos Steam de um usuário. O sistema usa a API Web da Steam para obter os dados de jogos do usuário e a API de IA Generativa Gemini para gerar recomendações personalizadas.
@@ -12,7 +12,7 @@ Este aplicativo fornece recomendações de jogos com base na biblioteca de jogos
 - Exibe uma lista paginada de jogos possuídos pelo usuário.
 - Gera recomendações personalizadas de jogos usando IA.
 
-![image](https://github.com/user-attachments/assets/913672a2-467f-4bc1-af1a-04668fd93784)
+![image](https://github.com/user-attachments/assets/547ecb8b-c04c-4267-857b-fa4706b8d68a)
 
 ---
 
