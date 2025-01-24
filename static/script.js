@@ -1,77 +1,65 @@
-let currentPage = 1
-let totalGames = 0
-let gameHistory = []
+let currentPage = 1;
+let totalGames = 0;
 
 async function getUserGames() {
-  const username = document.getElementById("steam-username").value
-  if (!username) {
-    alert("Por favor, insira um nome de usuário Steam!")
-    return
-  }
-
-  try {
-    const response = await fetch(`/user_games?username=${username}&page=${currentPage}`)
-    const data = await response.json()
-
-    if (data.error) {
-      alert(data.error)
-      return
+    const username = document.getElementById('steam-username').value;
+    if (!username) {
+        alert('Por favor, insira um nome de usuário Steam!');
+        return;
     }
 
-    totalGames = data.total_games
-    const gameList = document.getElementById("game-list")
+    try {
+        const response = await fetch(`/user_games?username=${username}&page=${currentPage}`);
+        const data = await response.json();
 
-    // Armazena os jogos atuais no histórico
-    gameHistory.push(data.games)
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
 
-    displayGames(data.games)
+        totalGames = data.total_games;
+        const gameList = document.getElementById('game-list');
+        gameList.innerHTML = ''; // Limpa os jogos anteriores
 
-    document.getElementById("game-list-container").style.display = "block"
+        data.games.forEach(game => {
+            const card = document.createElement('div');
+            card.className = 'game-card';
+        
+            // Criando o link para a página do Steam
+            const link = document.createElement('a');
+            link.href = `https://store.steampowered.com/app/${game.appid}`;
+            link.target = '_blank';
+        
+            const img = document.createElement('img');
+            img.src = game.img;
+            img.alt = game.name;
+        
+            const info = document.createElement('div');
+            info.className = 'game-info';
+        
+            const title = document.createElement('h3');
+            title.textContent = game.name;
+        
+            info.appendChild(title);
+            card.appendChild(link); 
+            link.appendChild(img);  
+            card.appendChild(info);
+            gameList.appendChild(card);
+        });
+        
 
-    updateNavigationButtons()
+        document.getElementById('game-list-container').style.display = 'block';
 
-    recommendGames(data.game_names)
-  } catch (error) {
-    alert("Erro ao obter os jogos do usuário!")
-  }
-}
+        if (currentPage * 15 < totalGames) {
+            document.getElementById('load-more-btn').style.display = 'block';
+        } else {
+            document.getElementById('load-more-btn').style.display = 'none';
+        }
 
-function displayGames(games) {
-  const gameList = document.getElementById("game-list")
-  gameList.innerHTML = "" // Limpa os jogos anteriores
-
-  games.forEach((game) => {
-    const card = document.createElement("div")
-    card.className = "game-card"
-
-    const link = document.createElement("a")
-    link.href = `https://store.steampowered.com/app/${game.appid}`
-    link.target = "_blank"
-
-    const img = document.createElement("img")
-    img.src = game.img
-    img.alt = game.name
-
-    const info = document.createElement("div")
-    info.className = "game-info"
-
-    const title = document.createElement("h3")
-    title.textContent = game.name
-
-    info.appendChild(title)
-    card.appendChild(link)
-    link.appendChild(img)
-    card.appendChild(info)
-    gameList.appendChild(card)
-  })
-}
-
-function updateNavigationButtons() {
-  const loadMoreBtn = document.getElementById("load-more-btn")
-  const backBtn = document.getElementById("back-btn")
-
-  loadMoreBtn.style.display = currentPage * 15 < totalGames ? "inline-block" : "none"
-  backBtn.style.display = currentPage > 1 ? "inline-block" : "none"
+        recommendGames(data.game_names);
+    } catch (error) {
+        alert('Erro ao obter os jogos do usuário!');
+    }
 }
 
 async function recommendGames(games) {
@@ -128,20 +116,9 @@ document.getElementById("load-more-btn").addEventListener("click", () => {
   getUserGames()
 })
 
-document.getElementById("back-btn").addEventListener("click", () => {
-  if (currentPage > 1) {
-    currentPage--
-    gameHistory.pop() // Remove a página atual do histórico
-    displayGames(gameHistory[gameHistory.length - 1]) // Exibe a página anterior
-    updateNavigationButtons()
-  }
-})
-
 document.getElementById("steam-username").addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
     currentPage = 1
-    gameHistory = []
     getUserGames()
   }
 })
-
