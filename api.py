@@ -75,7 +75,7 @@ def recommend_games():
     
     try:
         prompt = f"""
-        Baseado nos seguintes jogos que eu gosto: {', '.join(games_list[:20])}, 
+        Baseado nos seguintes jogos que eu gosto: {', '.join(games_list[:])}, 
         recomende 3 jogos semelhantes que eu poderia gostar. Para cada jogo recomendado, forneça:
         1. O título exato do jogo
         2. Uma breve descrição do jogo (máximo 100 caracteres)
