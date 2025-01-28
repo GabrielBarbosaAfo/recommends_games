@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Finder - Descubra Novos Jogos</title>
+    <title>Recommends Games</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
@@ -20,29 +20,30 @@
 
     <main>
         <section class="hero">
+            <div class="hero-overlay"></div>
             <div class="hero-content">
                 <h1>Descubra Novos Jogos Baseados em Seu Gosto</h1>
                 <p>Use sua biblioteca Steam para receber recomendações personalizadas de jogos que você vai amar.</p>
             </div>
-            <div class="hero-background">
-                <div class="particles"></div>
+            <div class="games-grid">
+                <img src="recomend.png" alt="Grid de jogos" class="games-grid-image">
             </div>
         </section>
 
         <section id="features" class="features">
             <h2>Recursos Principais</h2>
             <div class="features-grid">
-                <div class="feature-card" data-aos="fade-up">
+                <div class="feature-card">
                     <div class="feature-icon">🎮</div>
                     <h3>Biblioteca Steam</h3>
                     <p>Conecte-se com sua biblioteca Steam e veja todos os seus jogos em um só lugar.</p>
                 </div>
-                <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-card">
                     <div class="feature-icon">🤖</div>
                     <h3>IA Avançada</h3>
                     <p>Recomendações inteligentes baseadas nos jogos que você mais gosta.</p>
                 </div>
-                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-card">
                     <div class="feature-icon">📊</div>
                     <h3>Análise Detalhada</h3>
                     <p>Descubra por que cada jogo foi recomendado especialmente para você.</p>
@@ -51,23 +52,24 @@
         </section>
 
         <section id="how-it-works" class="how-it-works">
+            <div class="section-background"></div>
             <h2>Como Funciona</h2>
             <div class="steps">
-                <div class="step" data-aos="fade-right">
+                <div class="step">
                     <div class="step-number">1</div>
                     <div class="step-content">
                         <h3>Conecte sua Conta</h3>
                         <p>Digite seu nome de usuário Steam para começar.</p>
                     </div>
                 </div>
-                <div class="step" data-aos="fade-right" data-aos-delay="100">
+                <div class="step">
                     <div class="step-number">2</div>
                     <div class="step-content">
                         <h3>Veja sua Biblioteca</h3>
                         <p>Visualize todos os seus jogos em uma interface intuitiva.</p>
                     </div>
                 </div>
-                <div class="step" data-aos="fade-right" data-aos-delay="200">
+                <div class="step">
                     <div class="step-number">3</div>
                     <div class="step-content">
                         <h3>Receba Recomendações</h3>
@@ -84,7 +86,6 @@
             <p>Não afiliado à Valve ou Steam.</p>
         </div>
     </footer>
-
     <script src="script.js"></script>
 </body>
 </html>

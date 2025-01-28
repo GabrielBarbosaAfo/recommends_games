@@ -1,22 +1,16 @@
 let currentPage = 1
 let totalGames = 0
-let gameHistory = []
+let currentGameNames = []
+let currentUsername = "" // Add this line
 
-async function checkImageExists(url) {
-  try {
-    const response = await fetch(url, { method: "HEAD" })
-    return response.ok
-  } catch {
-    return false
-  }
-}
-
-async function getUserGames() {
-  const username = document.getElementById("steam-username").value
+async function getUserGames(forceUsername = null) {
+  const username = forceUsername || document.getElementById("steam-username").value
   if (!username) {
     showError("Por favor, insira um nome de usuário Steam!")
     return
   }
+
+  currentUsername = username // Store the username
 
   try {
     showLoading(true)
@@ -33,50 +27,12 @@ async function getUserGames() {
     }
 
     totalGames = data.total_games
-    const gameList = document.getElementById("game-list")
-    gameList.innerHTML = "" // Limpa os jogos anteriores
-
-    data.games.forEach((game) => {
-      const card = document.createElement("div")
-      card.className = "game-card"
-
-      // Criando o link para a página do Steam
-      const link = document.createElement("a")
-      link.href = `https://store.steampowered.com/app/${game.appid}`
-      link.target = "_blank"
-
-      const img = document.createElement("img")
-      img.src = game.img
-      img.alt = game.name
-      img.onerror = function () {
-        this.onerror = null
-        this.src = ""
-        this.alt = "Imagem não disponível"
-        this.classList.add("placeholder-img")
-      }
-
-      const info = document.createElement("div")
-      info.className = "game-info"
-
-      const title = document.createElement("h3")
-      title.textContent = game.name
-
-      info.appendChild(title)
-      card.appendChild(link)
-      link.appendChild(img)
-      card.appendChild(info)
-      gameList.appendChild(card)
-    })
-
-    document.getElementById("game-list-container").style.display = "block"
-
-    if (currentPage * 15 < totalGames) {
-      document.getElementById("load-more-btn").style.display = "block"
-    } else {
-      document.getElementById("load-more-btn").style.display = "none"
+    currentGameNames = data.game_names // Armazena os nomes dos jogos
+    displayGames(data.games)
+    updateNavigationButtons()
+    if (currentPage === 1) {
+      await recommendGames(data.game_names)
     }
-
-    await recommendGames(data.game_names)
   } catch (error) {
     showError("Erro ao obter os jogos do usuário!")
   } finally {
@@ -85,7 +41,43 @@ async function getUserGames() {
 }
 
 function displayGames(games) {
-  //This function is no longer used after the update.  It's kept here for reference in case it's needed later.
+  const gameList = document.getElementById("game-list")
+  gameList.innerHTML = ""
+
+  games.forEach((game) => {
+    const card = document.createElement("div")
+    card.className = "game-card"
+
+    const link = document.createElement("a")
+    link.href = `https://store.steampowered.com/app/${game.appid}`
+    link.target = "_blank"
+    link.title = game.name // Adiciona tooltip
+
+    const img = document.createElement("img")
+    img.src = game.img
+    img.alt = game.name
+    img.loading = "lazy" // Lazy loading para melhor performance
+    img.onerror = function () {
+      this.onerror = null
+      this.src = ""
+      this.alt = "Imagem não disponível"
+      this.classList.add("placeholder-img")
+    }
+
+    const info = document.createElement("div")
+    info.className = "game-info"
+
+    const title = document.createElement("h3")
+    title.textContent = game.name
+
+    info.appendChild(title)
+    link.appendChild(img)
+    link.appendChild(info)
+    card.appendChild(link)
+    gameList.appendChild(card)
+  })
+
+  document.getElementById("game-list-container").style.display = "block"
 }
 
 async function recommendGames(games) {
@@ -115,6 +107,7 @@ async function recommendGames(games) {
         img.src = rec.img
         img.alt = rec.title
         img.className = "recommendation-img"
+        img.loading = "lazy"
         img.onerror = function () {
           this.onerror = null
           this.src = ""
@@ -125,10 +118,10 @@ async function recommendGames(games) {
         const content = document.createElement("div")
         content.className = "recommendation-content"
         content.innerHTML = `
-            <h3>${rec.title || "Título não disponível"}</h3>
-            <p class="description"><strong>Descrição:</strong> ${rec.description || "Descrição não disponível"}</p>
-            <p class="reason"><strong>Razão:</strong> ${rec.reason || "Razão não disponível"}</p>
-        `
+                    <h3>${rec.title || "Título não disponível"}</h3>
+                    <p class="description"><strong>Descrição:</strong> ${rec.description || "Descrição não disponível"}</p>
+                    <p class="reason"><strong>Razão:</strong> ${rec.reason || "Razão não disponível"}</p>
+                `
 
         card.appendChild(img)
         card.appendChild(content)
@@ -142,6 +135,14 @@ async function recommendGames(games) {
   } catch (error) {
     console.error("Erro ao obter recomendações de jogos:", error)
     showError(`Erro ao obter recomendações de jogos: ${error.message}`)
+  }
+}
+
+async function refreshRecommendations() {
+  if (currentGameNames.length > 0) {
+    showLoading(true)
+    await recommendGames(currentGameNames)
+    showLoading(false)
   }
 }
 
@@ -165,27 +166,27 @@ function updateNavigationButtons() {
   const loadMoreBtn = document.getElementById("load-more-btn")
   const backBtn = document.getElementById("back-btn")
 
-  loadMoreBtn.style.display = currentPage * 15 < totalGames ? "inline-block" : "none"
-  backBtn.style.display = currentPage > 1 ? "inline-block" : "none"
+  loadMoreBtn.style.display = currentPage * 15 < totalGames ? "block" : "none"
+  backBtn.style.display = currentPage > 1 ? "block" : "none"
 }
 
 document.getElementById("load-more-btn").addEventListener("click", () => {
   currentPage++
-  getUserGames()
+  getUserGames(currentUsername)
 })
 
 document.getElementById("back-btn").addEventListener("click", () => {
   if (currentPage > 1) {
     currentPage--
-    gameHistory.pop()
-    updateNavigationButtons()
+    getUserGames(currentUsername)
   }
 })
 
 document.getElementById("steam-username").addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
     currentPage = 1
-    gameHistory = []
+    currentUsername = "" // Reset username on new search
     getUserGames()
   }
 })
+

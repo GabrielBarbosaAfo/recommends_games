@@ -42,11 +42,17 @@
             </div>
 
             <section id="recommendation-container" style="display: none;">
-                <h2>Recomendações de Jogos</h2>
+                <div class="recommendation-header">
+                    <h2>Recomendações de Jogos</h2>
+                    <button id="refresh-recommendations" onclick="refreshRecommendations()">
+                        Atualizar Recomendações
+                    </button>
+                </div>
                 <div class="recommendations">
                     <div id="recommendations-list" class="recommendation-grid"></div>
                 </div>
             </section>
+            
         </main>
 
     </div>

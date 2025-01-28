@@ -90,6 +90,15 @@ document.addEventListener("DOMContentLoaded", () => {
           }
       `
     document.head.appendChild(style)
+
+    window.addEventListener("scroll", () => {
+      const howItWorks = document.querySelector(".how-it-works")
+      if (howItWorks) {
+        const scrolled = window.pageYOffset
+        const rate = scrolled * 0.3
+        howItWorks.style.backgroundPosition = `center ${-rate}px`
+      }
+    })
   })
   
   
