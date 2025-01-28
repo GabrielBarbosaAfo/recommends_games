@@ -1,7 +1,7 @@
 let currentPage = 1
 let totalGames = 0
 let currentGameNames = []
-let currentUsername = "" // Add this line
+let currentUsername = ""
 
 async function getUserGames(forceUsername = null) {
   const username = forceUsername || document.getElementById("steam-username").value
@@ -10,7 +10,7 @@ async function getUserGames(forceUsername = null) {
     return
   }
 
-  currentUsername = username // Store the username
+  currentUsername = username
 
   try {
     showLoading(true)
@@ -27,11 +27,11 @@ async function getUserGames(forceUsername = null) {
     }
 
     totalGames = data.total_games
-    currentGameNames = data.game_names // Armazena os nomes dos jogos
+    currentGameNames = data.game_names
     displayGames(data.games)
     updateNavigationButtons()
     if (currentPage === 1) {
-      await recommendGames(data.game_names)
+      await recommendGames(data.game_names, false)
     }
   } catch (error) {
     showError("Erro ao obter os jogos do usuário!")
@@ -51,12 +51,12 @@ function displayGames(games) {
     const link = document.createElement("a")
     link.href = `https://store.steampowered.com/app/${game.appid}`
     link.target = "_blank"
-    link.title = game.name // Adiciona tooltip
+    link.title = game.name
 
     const img = document.createElement("img")
     img.src = game.img
     img.alt = game.name
-    img.loading = "lazy" // Lazy loading para melhor performance
+    img.loading = "lazy"
     img.onerror = function () {
       this.onerror = null
       this.src = ""
@@ -80,14 +80,14 @@ function displayGames(games) {
   document.getElementById("game-list-container").style.display = "block"
 }
 
-async function recommendGames(games) {
+async function recommendGames(games, isRefresh = false) {
   try {
     const response = await fetch("/recommend_games", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ games_names: games }),
+      body: JSON.stringify({ games_names: games, is_refresh: isRefresh }),
     })
     const data = await response.json()
 
@@ -140,9 +140,20 @@ async function recommendGames(games) {
 
 async function refreshRecommendations() {
   if (currentGameNames.length > 0) {
-    showLoading(true)
-    await recommendGames(currentGameNames)
-    showLoading(false)
+    const recommendationsList = document.getElementById("recommendations-list")
+    const refreshButton = document.getElementById("refresh-recommendations")
+
+    recommendationsList.style.opacity = "0.5"
+    refreshButton.disabled = true
+    refreshButton.textContent = "Atualizando..."
+
+    try {
+      await recommendGames(currentGameNames, true)
+    } finally {
+      recommendationsList.style.opacity = "1"
+      refreshButton.disabled = false
+      refreshButton.textContent = "Atualizar Recomendações"
+    }
   }
 }
 
@@ -153,6 +164,7 @@ function showError(message) {
   errorMessage.textContent = message
   errorContainer.style.display = "flex"
 
+  // Hide the error message after 5 seconds
   setTimeout(() => {
     errorContainer.style.display = "none"
   }, 5000)
@@ -185,8 +197,10 @@ document.getElementById("back-btn").addEventListener("click", () => {
 document.getElementById("steam-username").addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
     currentPage = 1
-    currentUsername = "" // Reset username on new search
+    currentUsername = ""
     getUserGames()
   }
 })
+
+document.getElementById("refresh-recommendations").addEventListener("click", refreshRecommendations)
 

@@ -72,27 +72,48 @@ def recommend_games():
         return jsonify({'error': 'Games data is required'}), 400
 
     games_list = data['games_names']
+    is_refresh = data.get('is_refresh', False)
     
     try:
-        prompt = f"""
-        Baseado nos seguintes jogos que eu gosto: {', '.join(games_list[:])}, 
-        recomende 3 jogos semelhantes que eu poderia gostar. Para cada jogo recomendado, forneça:
-        1. O título exato do jogo
-        2. Uma breve descrição do jogo (máximo 100 caracteres)
-        3. A razão pela qual você está recomendando este jogo (máximo 150 caracteres)
+        if is_refresh:
+            prompt = f"""
+            Poderia me indicar mais 3 jogos diferentes do que você me recomendou anteriormente. Para cada jogo recomendado, forneça:
+            1. O título exato do jogo
+            2. Uma breve descrição do jogo (máximo 100 caracteres)
+            3. A razão pela qual você está recomendando este jogo (máximo 150 caracteres)
 
-        Formate sua resposta como um JSON válido com a seguinte estrutura:
-        {{
-            "recommendations": [
-                {{
-                    "title": "Título do Jogo",
-                    "description": "Breve descrição do jogo",
-                    "reason": "Razão da recomendação"
-                }},
-                ...
-            ]
-        }}
-        """
+            Formate sua resposta como um JSON válido com a seguinte estrutura:
+            {{
+                "recommendations": [
+                    {{
+                        "title": "Título do Jogo",
+                        "description": "Breve descrição do jogo",
+                        "reason": "Razão da recomendação"
+                    }},
+                    ...
+                ]
+            }}
+            """
+        else:
+            prompt = f"""
+            Baseado nos seguintes jogos que eu gosto: {', '.join(games_list[:])}, 
+            recomende 3 jogos semelhantes que eu poderia gostar. Para cada jogo recomendado, forneça:
+            1. O título exato do jogo
+            2. Uma breve descrição do jogo (máximo 100 caracteres)
+            3. A razão pela qual você está recomendando este jogo (máximo 150 caracteres)
+
+            Formate sua resposta como um JSON válido com a seguinte estrutura:
+            {{
+                "recommendations": [
+                    {{
+                        "title": "Título do Jogo",
+                        "description": "Breve descrição do jogo",
+                        "reason": "Razão da recomendação"
+                    }},
+                    ...
+                ]
+            }}
+            """
 
         model = genai.GenerativeModel('gemini-1.5-flash')
         response = model.generate_content(prompt)
